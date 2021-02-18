@@ -24,6 +24,17 @@ func TestStaticMatchGet(t *testing.T) {
 	assert.NotNil(handler)
 }
 
+func TestStaticMatchGetChinese(t *testing.T) {
+	assert := assert.New(t)
+
+	app := New()
+	app.Get("/你好", fakeAction)
+
+	router := app.GetRouter()
+	handler, _ := router.Match("/你好", "GET")
+	assert.NotNil(handler)
+}
+
 func TestStaticMatchPost(t *testing.T) {
 	assert := assert.New(t)
 
