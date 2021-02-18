@@ -8,20 +8,30 @@ import (
 
 var (
 	ip	= flag.String("ip", "0.0.0.0", "IP or Host")
-	port = flag.Int("port", 3031, "Listen Port")
+	port = flag.Int("port", 3030, "Listen Port")
 )
 
 func main() {
 	flag.Parse()
 
 	app := fastgo3.NewApplication()
-	app.Amount([]fastgo3.Route{
-		fastgo3.Post("/hello", helloAction),
-	})
+	app.Get("/hello", helloAction)
+	app.Get("/panic", panicAction)
+	app.Get("/post", postAction)
 	app.Run(*ip, *port)
 }
 
+func postAction(ctx *fastgo3.Context) {
+
+}
+
+func panicAction(ctx *fastgo3.Context) {
+	lst := make([]int, 0)
+	lst[0] = 10
+}
+
 func helloAction(ctx *fastgo3.Context) {
+
 	fmt.Fprintf(ctx, "Hello, world!\n\n")
 
 	fmt.Fprintf(ctx, "Request method is %q\n", ctx.Method())

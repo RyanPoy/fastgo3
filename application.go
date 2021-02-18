@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/valyala/fasthttp"
 	"log"
+	"runtime/debug"
 )
 
 type Application struct {
@@ -31,7 +32,19 @@ func (app *Application) Run(ip string, port int) {
 	}
 }
 
+func (app *Application) writeError(ctx *fasthttp.RequestCtx) {
+	if err := recover(); err != nil {
+		httpCode := fasthttp.StatusInternalServerError
+		ctx.Response.Reset()
+		ctx.SetStatusCode(httpCode)
+		errMsg := fmt.Sprintf("%s\n\n%s", fasthttp.StatusMessage(httpCode), string(debug.Stack()))
+		ctx.SetBodyString(errMsg)
+	}
+}
+
 func (app *Application) dispatch(ctx *fasthttp.RequestCtx) {
+	defer app.writeError(ctx)
+
 	uri, method := string(ctx.Path()), string(ctx.Method())
 	action, errno := app.router.Match(uri, method)
 	if errno == 0  {
@@ -52,9 +65,32 @@ func (app *Application) dispatch(ctx *fasthttp.RequestCtx) {
 	ctx.SetBodyString(fasthttp.StatusMessage(httpCode))
 }
 
-func (app *Application) Amount(routes []Route) *Application {
-	for _, r := range routes {
-		app.router.Add(r)
-	}
+func (app *Application) Get(uri string, action HandlerFunc) *Application {
+	r := Route {Method: "GET", Uri: uri, Handler: action}
+	app.router.Add(r)
+	return app
+}
+
+func (app *Application) Post(uri string, action HandlerFunc) *Application {
+	r := Route {Method: "POST", Uri: uri, Handler: action}
+	app.router.Add(r)
+	return app
+}
+
+func (app *Application) Put(uri string, action HandlerFunc) *Application {
+	r := Route {Method: "PUT", Uri: uri, Handler: action}
+	app.router.Add(r)
+	return app
+}
+
+func (app *Application) Delete(uri string, action HandlerFunc) *Application {
+	r := Route {Method: "DELETE", Uri: uri, Handler: action}
+	app.router.Add(r)
+	return app
+}
+
+func (app *Application) Patch(uri string, action HandlerFunc) *Application {
+	r := Route {Method: "PATCH", Uri: uri, Handler: action}
+	app.router.Add(r)
 	return app
 }

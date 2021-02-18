@@ -4,39 +4,46 @@ import (
 	"strings"
 )
 
-type MethodAction map[string]ActionFunc
+type HandlerFunc func(ctx *Context)
+type Route struct {
+	Method  string
+	Uri     string
+	Handler HandlerFunc
+}
 
+
+type MethodHandler map[string]HandlerFunc
 type Router struct {
-	StaticRoutes map[string]MethodAction
+	StaticRoutes map[string]MethodHandler
 }
 
 func newRouter() Router {
-	return Router { StaticRoutes: make(map[string]MethodAction) }
+	return Router { StaticRoutes: make(map[string]MethodHandler) }
 }
 
 func (router *Router) Add(route Route) *Router {
-	methodAction, ok := router.StaticRoutes[route.Uri]
+	methodHandler, ok := router.StaticRoutes[route.Uri]
 	if !ok { // 不存在
-		methodAction = make(MethodAction)
-		router.StaticRoutes[route.Uri] = methodAction
+		methodHandler = make(MethodHandler)
+		router.StaticRoutes[route.Uri] = methodHandler
 	}
 	method := strings.ToLower(route.Method)
-	if _, ok := methodAction[method]; !ok {
-		methodAction[method] = route.Action
+	if _, ok := methodHandler[method]; !ok {
+		methodHandler[method] = route.Handler
 	}
 	return router
 }
 
-func (router *Router) Match(uri string, method string) (ActionFunc, int) {
-	methodAction, ok := router.StaticRoutes[uri]
-	if !ok {
+func (router *Router) Match(uri string, method string) (HandlerFunc, int) {
+	methodHandler, ok := router.StaticRoutes[uri]
+	if !ok { // 404
 		return nil, -1
 	}
 	method = strings.ToLower(method)
-	action, ok := methodAction[method]
-	if !ok {
+	handler, ok := methodHandler[method]
+	if !ok { // 504
 		return nil, -2
 	}
 
-	return action, 0
+	return handler, 0
 }
