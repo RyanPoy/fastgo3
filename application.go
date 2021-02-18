@@ -49,7 +49,6 @@ func (app *Application) dispatch(ctx *fasthttp.RequestCtx) {
 	handler, errno := app.router.Match(uri, method)
 	if errno == 0  {
 		context := NewContext(ctx)
-		context.SetContentType("text/plain; charset=utf8")
 		handler(&context)
 		log.Printf("[%s] \n", uri)
 		return

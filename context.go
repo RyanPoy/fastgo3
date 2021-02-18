@@ -1,6 +1,7 @@
 package fastgo3
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/valyala/fasthttp"
 )
@@ -83,8 +84,27 @@ func(context *Context) Request() *fasthttp.Request {
 
 // Write writes p into response body.
 func (context *Context) Write(p []byte) (int, error) {
-	context.fastHttpRequestCtx.Response.AppendBody(p)
-	return len(p), nil
+	return context.fastHttpRequestCtx.Write(p)
+}
+
+// WriteString appends s to response body.
+func (context *Context) WriteString(s string) (int, error) {
+	return context.fastHttpRequestCtx.WriteString(s)
+}
+
+func (context *Context) RenderString(data string) {
+	context.SetContentType("text/plain; charset=utf8")
+	fmt.Fprintf(context, data)
+}
+
+func (context *Context) RenderHtml(data string) {
+	context.SetContentType("text/html; charset=utf8")
+	context.WriteString(data)
+}
+
+func (context *Context) RenderJson(data interface{}) {
+	context.SetContentType("application/json; charset=utf8")
+	json.NewEncoder(context).Encode(data)
 }
 
 // QueryArgs returns query arguments from RequestURI.
