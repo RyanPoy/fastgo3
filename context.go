@@ -180,7 +180,6 @@ func (context *Context) BoolParam(name string, defaultValue bool) bool {
 	return defaultValue
 }
 
-// GetUfloat returns ufloat value for the given key.
 func (context *Context) FloatParam(key string, defaultValue float64) float64 {
 	for _, argFunc := range context.argFuncs {
 		if value, err := argFunc().GetUfloat(key); err != nil {
@@ -190,7 +189,6 @@ func (context *Context) FloatParam(key string, defaultValue float64) float64 {
 	return defaultValue
 }
 
-// GetUint returns uint value for the given key.
 func (context *Context) IntParam(key string, defaultValue int) int {
 	for _, argFunc := range context.argFuncs {
 		if value, err := argFunc().GetUint(key); err != nil {
