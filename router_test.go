@@ -10,7 +10,7 @@ func fakeAction(context *Context) {}
 func TestStaticMatchGet(t *testing.T) {
 	assert := assert.New(t)
 
-	app := NewApplication()
+	app := New()
 	app.Get("/hello", fakeAction)
 
 	router := app.GetRouter()
@@ -27,7 +27,7 @@ func TestStaticMatchGet(t *testing.T) {
 func TestStaticMatchPost(t *testing.T) {
 	assert := assert.New(t)
 
-	app := NewApplication()
+	app := New()
 	app.Post("/hello", fakeAction)
 
 	router := app.GetRouter()
@@ -42,7 +42,7 @@ func TestStaticMatchPost(t *testing.T) {
 func TestStaticMatchGetAndPost(t *testing.T) {
 	assert := assert.New(t)
 
-	app := NewApplication()
+	app := New()
 	app.Get("/hello", fakeAction)
 	app.Post("/hello", fakeAction)
 
@@ -57,7 +57,7 @@ func TestStaticMatchGetAndPost(t *testing.T) {
 func TestStaticMatchOtherHttpMethods(t *testing.T) {
 	assert := assert.New(t)
 
-	app := NewApplication()
+	app := New()
 	app.Route([]string{"PUT", "Delete"}, "/upload", fakeAction)
 
 	router := app.GetRouter()
@@ -71,7 +71,7 @@ func TestStaticMatchOtherHttpMethods(t *testing.T) {
 func TestStaticMiss(t *testing.T) {
 	assert := assert.New(t)
 
-	app := NewApplication()
+	app := New()
 	app.Get("/hello", fakeAction)
 	app.Post("/upload", fakeAction)
 

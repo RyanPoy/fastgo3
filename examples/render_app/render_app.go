@@ -13,7 +13,7 @@ var (
 
 func main() {
 	flag.Parse()
-	app := fastgo3.NewApplication()
+	app := fastgo3.New()
 	app.Get("/user.json", JsonHandler)
 	app.Get("/user.html", HtmlHandler)
 	app.Get("/user.string", StringHandler)

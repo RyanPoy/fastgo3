@@ -13,7 +13,7 @@ type Application struct {
 	router *Router
 }
 
-func NewApplication() Application {
+func New() Application {
 	router := newRouter()
 	return Application{router: &router}
 }
