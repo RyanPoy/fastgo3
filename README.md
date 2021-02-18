@@ -1,5 +1,5 @@
 # fastgo3
-a simple golang webframework base on fasthttp
+a simple golang webframework base on [fasthttp](https://github.com/valyala/fasthttp)
 
 simple usage:
 ``` Golang
