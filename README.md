@@ -12,7 +12,7 @@ import (
 )
 
 func main() {
-  app := fastgo3.NewApplication()
+  app := fastgo3.New()
   app.Get("/helloworld", func (ctx *fastgo3.Context) {
     ctx.RenderString("hello, world!")
   })
