@@ -14,11 +14,13 @@ func TestStaticMatchGet(t *testing.T) {
 	app.Get("/hello", fakeAction)
 
 	router := app.GetRouter()
-
 	handler, _ := router.Match("/hello", "GET")
 	assert.NotNil(handler)
 
 	handler, _ = router.Match("/hello", "get")
+	assert.NotNil(handler)
+
+	handler, _ = router.Match("/hello/", "GET")
 	assert.NotNil(handler)
 }
 

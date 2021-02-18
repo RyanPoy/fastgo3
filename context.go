@@ -3,27 +3,26 @@ package fastgo3
 import (
 	"fmt"
 	"github.com/valyala/fasthttp"
-	"strings"
 )
 
 type Context struct {
 	fastHttpRequestCtx *fasthttp.RequestCtx
-	Method string
-	args []func() *fasthttp.Args
+	Method             string
+	argFuncs           []func() *fasthttp.Args
 }
 
 func NewContext(fastHttpRequestCtx *fasthttp.RequestCtx) Context {
 	c := Context {
 		fastHttpRequestCtx: fastHttpRequestCtx,
-		Method: strings.ToUpper(string(fastHttpRequestCtx.Method())),
-		args: make([]func() *fasthttp.Args, 3),
+		Method:             Upper(string(fastHttpRequestCtx.Method())),
+		argFuncs:           make([]func() *fasthttp.Args, 3),
 	}
 	if c.Method == "GET" {
-		c.args[0] = c.QueryArgs
-		c.args[1] = c.PostArgs
+		c.argFuncs[0] = c.QueryArgs
+		c.argFuncs[1] = c.PostArgs
 	} else {
-		c.args[0] = c.PostArgs
-		c.args[1] = c.QueryArgs
+		c.argFuncs[0] = c.PostArgs
+		c.argFuncs[1] = c.QueryArgs
 	}
 	return c
 }
@@ -111,7 +110,7 @@ func (context *Context) PostArgs() *fasthttp.Args {
 }
 
 func (context *Context) BytesParam(name string, defaultValue []byte) []byte {
-	for _, argFunc := range context.args {
+	for _, argFunc := range context.argFuncs {
 		value := argFunc().Peek(name)
 		if value != nil {
 			return value
@@ -133,7 +132,7 @@ func (context *Context) StrParam(name string, defaultValue string) string {
 // true is returned for "1", "t", "T", "true", "TRUE", "True", "y", "yes", "Y", "YES", "Yes",
 // otherwise false is returned.
 func (context *Context) BoolParam(name string, defaultValue bool) bool {
-	for _, argFunc := range context.args {
+	for _, argFunc := range context.argFuncs {
 		args := argFunc()
 		if args.Has(name) {
 			return args.GetBool(name)
@@ -145,7 +144,7 @@ func (context *Context) BoolParam(name string, defaultValue bool) bool {
 
 // GetUfloat returns ufloat value for the given key.
 func (context *Context) FloatParam(key string, defaultValue float64) float64 {
-	for _, argFunc := range context.args {
+	for _, argFunc := range context.argFuncs {
 		if value, err := argFunc().GetUfloat(key); err != nil {
 			return value
 		}
@@ -155,7 +154,7 @@ func (context *Context) FloatParam(key string, defaultValue float64) float64 {
 
 // GetUint returns uint value for the given key.
 func (context *Context) IntParam(key string, defaultValue int) int {
-	for _, argFunc := range context.args {
+	for _, argFunc := range context.argFuncs {
 		if value, err := argFunc().GetUint(key); err != nil {
 			return value
 		}

@@ -48,7 +48,7 @@ func (app *Application) dispatch(ctx *fasthttp.RequestCtx) {
 	uri, method := string(ctx.Path()), string(ctx.Method())
 	handler, errno := app.router.Match(uri, method)
 	if errno == 0  {
-		context := Context { fastHttpRequestCtx: ctx }
+		context := NewContext(ctx)
 		context.SetContentType("text/plain; charset=utf8")
 		handler(&context)
 		log.Printf("[%s] \n", uri)
@@ -87,7 +87,7 @@ func (app *Application) Patch(uri string, handler HandlerFunc) *Application {
 
 func (app *Application) Route(methods []string, uri string, handler HandlerFunc) *Application {
 	for _, method := range methods {
-		r := route {Method: method, Uri: uri, Handler: handler}
+		r := NewRoute(method, uri, handler)
 		app.router.Add(r)
 	}
 	return app
