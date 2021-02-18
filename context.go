@@ -12,6 +12,12 @@ type Context struct {
 	argFuncs           []func() *fasthttp.Args
 }
 
+type ApiResult struct {
+	code int
+	msg string
+	data interface{}
+}
+
 func NewContext(fastHttpRequestCtx *fasthttp.RequestCtx) Context {
 	c := Context {
 		fastHttpRequestCtx: fastHttpRequestCtx,
@@ -105,6 +111,19 @@ func (context *Context) RenderHtml(data string) {
 func (context *Context) RenderJson(data interface{}) {
 	context.SetContentType("application/json; charset=utf8")
 	json.NewEncoder(context).Encode(data)
+}
+
+func (context *Context) Ok(data interface{}) {
+	context.Finish(0, "", data)
+}
+
+func (context *Context) Err(msg string) {
+	context.Finish(-1, msg, make(map[string]string))
+}
+
+func (context *Context) Finish(code int, msg string, data interface{}) {
+	relt := ApiResult {code: code, msg: msg, data: data}
+	context.RenderJson(relt)
 }
 
 // QueryArgs returns query arguments from RequestURI.
