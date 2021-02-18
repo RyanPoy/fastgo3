@@ -6,11 +6,12 @@ type Route struct {
 	Uri     string
 	Handler HandlerFunc
 }
+
 func NewRoute(method string, uri string, handler HandlerFunc) Route {
 	uri = Purify(uri)
 	return Route{
-		Method: Upper(method),
-		Uri: uri,
+		Method:  Upper(method),
+		Uri:     uri,
 		Handler: handler,
 	}
 }
@@ -21,7 +22,7 @@ type Router struct {
 }
 
 func newRouter() Router {
-	return Router { StaticRoutes: make(map[string]MethodHandler) }
+	return Router{StaticRoutes: make(map[string]MethodHandler)}
 }
 
 func (router *Router) Add(r Route) *Router {

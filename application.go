@@ -8,14 +8,14 @@ import (
 )
 
 type Application struct {
-	ip string
-	port int
+	ip     string
+	port   int
 	router *Router
 }
 
 func NewApplication() Application {
 	router := newRouter()
-	return Application{ router: &router }
+	return Application{router: &router}
 }
 
 func (app *Application) Run(ip string, port int) {
@@ -47,7 +47,7 @@ func (app *Application) dispatch(ctx *fasthttp.RequestCtx) {
 
 	uri, method := string(ctx.Path()), string(ctx.Method())
 	handler, errno := app.router.Match(uri, method)
-	if errno == 0  {
+	if errno == 0 {
 		context := NewContext(ctx)
 		handler(&context)
 		log.Printf("[%s] \n", uri)
@@ -65,23 +65,23 @@ func (app *Application) dispatch(ctx *fasthttp.RequestCtx) {
 }
 
 func (app *Application) Get(uri string, handler HandlerFunc) *Application {
-	return app.Route([]string { "GET" }, uri, handler)
+	return app.Route([]string{"GET"}, uri, handler)
 }
 
 func (app *Application) Post(uri string, handler HandlerFunc) *Application {
-	return app.Route([]string { "POST" }, uri, handler)
+	return app.Route([]string{"POST"}, uri, handler)
 }
 
 func (app *Application) Put(uri string, handler HandlerFunc) *Application {
-	return app.Route([]string { "PUT" }, uri, handler)
+	return app.Route([]string{"PUT"}, uri, handler)
 }
 
 func (app *Application) Delete(uri string, handler HandlerFunc) *Application {
-	return app.Route([]string { "DELETE" }, uri, handler)
+	return app.Route([]string{"DELETE"}, uri, handler)
 }
 
 func (app *Application) Patch(uri string, handler HandlerFunc) *Application {
-	return app.Route([]string { "PATCH" }, uri, handler)
+	return app.Route([]string{"PATCH"}, uri, handler)
 }
 
 func (app *Application) Route(methods []string, uri string, handler HandlerFunc) *Application {

@@ -13,13 +13,13 @@ type Context struct {
 }
 
 type ApiResult struct {
-	Code int `json:"code"`
-	Msg string `json:"msg"`
+	Code int         `json:"code"`
+	Msg  string      `json:"msg"`
 	Data interface{} `json:"data"`
 }
 
 func NewContext(fastHttpRequestCtx *fasthttp.RequestCtx) Context {
-	c := Context {
+	c := Context{
 		fastHttpRequestCtx: fastHttpRequestCtx,
 		Method:             Upper(string(fastHttpRequestCtx.Method())),
 		argFuncs:           make([]func() *fasthttp.Args, 3),
@@ -34,12 +34,12 @@ func NewContext(fastHttpRequestCtx *fasthttp.RequestCtx) Context {
 	return c
 }
 
-func(context *Context) SetHeader(name string, value string) *Context {
+func (context *Context) SetHeader(name string, value string) *Context {
 	context.fastHttpRequestCtx.Response.Header.Set(name, value)
 	return context
 }
 
-func(context *Context) SetCookie(name string, value string) *Context {
+func (context *Context) SetCookie(name string, value string) *Context {
 	var c fasthttp.Cookie
 	c.SetKey(name)
 	c.SetValue(value)
@@ -47,44 +47,44 @@ func(context *Context) SetCookie(name string, value string) *Context {
 	return context
 }
 
-func(context *Context) SetContentType(contentType string) *Context {
+func (context *Context) SetContentType(contentType string) *Context {
 	context.fastHttpRequestCtx.SetContentType(contentType)
 	return context
 }
 
-func(context *Context) RequestURI() string {
+func (context *Context) RequestURI() string {
 	return string(context.fastHttpRequestCtx.RequestURI())
 }
 
-func(context *Context) Path() string {
+func (context *Context) Path() string {
 	return string(context.fastHttpRequestCtx.Path())
 }
 
-func(context *Context) Host() string {
+func (context *Context) Host() string {
 	return string(context.fastHttpRequestCtx.Host())
 }
 
-func(context *Context) UserAgent() string {
+func (context *Context) UserAgent() string {
 	return string(context.fastHttpRequestCtx.UserAgent())
 }
 
-func(context *Context) ConnTime() string {
+func (context *Context) ConnTime() string {
 	return context.fastHttpRequestCtx.ConnTime().Format("2006-01-01T00:00:000000")
 }
 
-func(context *Context) Time() string {
+func (context *Context) Time() string {
 	return context.fastHttpRequestCtx.Time().Format("2006-01-01T00:00:000000")
 }
 
-func(context *Context) ConnRequestNum() uint64 {
+func (context *Context) ConnRequestNum() uint64 {
 	return context.fastHttpRequestCtx.ConnRequestNum()
 }
 
-func(context *Context) RemoteIP() string {
+func (context *Context) RemoteIP() string {
 	return fmt.Sprintf("%q", context.fastHttpRequestCtx.RemoteIP())
 }
 
-func(context *Context) Request() *fasthttp.Request {
+func (context *Context) Request() *fasthttp.Request {
 	return &context.fastHttpRequestCtx.Request
 }
 
@@ -122,7 +122,7 @@ func (context *Context) Err(msg string) {
 }
 
 func (context *Context) Finish(code int, msg string, data interface{}) {
-	apiResult := ApiResult {Code: code, Msg: msg, Data: data}
+	apiResult := ApiResult{Code: code, Msg: msg, Data: data}
 	context.RenderJson(apiResult)
 }
 
@@ -179,7 +179,6 @@ func (context *Context) BoolParam(name string, defaultValue bool) bool {
 	}
 	return defaultValue
 }
-
 
 // GetUfloat returns ufloat value for the given key.
 func (context *Context) FloatParam(key string, defaultValue float64) float64 {
