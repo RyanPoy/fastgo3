@@ -13,5 +13,5 @@ make
 # How to run
 
 ```
-./hello_app --ip=tcp.addr.to.listen --port=port
+./basic_app --ip=tcp.addr.to.listen --port=port
 ```

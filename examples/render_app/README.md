@@ -1,8 +1,6 @@
 # Hello app example
 
-* Displays various request info.
-* Sets response headers and cookies.
-* Supports transparent compression.
+* The most commonly methods which named: renderHtml, renderJson, renderString for a web app.
 
 # How to build
 
@@ -13,5 +11,5 @@ make
 # How to run
 
 ```
-./hello_app --ip=tcp.addr.to.listen --port=port
+./render_app --ip=tcp.addr.to.listen --port=port
 ```

@@ -13,9 +13,9 @@ type Context struct {
 }
 
 type ApiResult struct {
-	code int
-	msg string
-	data interface{}
+	Code int `json:"code"`
+	Msg string `json:"msg"`
+	Data interface{} `json:"data"`
 }
 
 func NewContext(fastHttpRequestCtx *fasthttp.RequestCtx) Context {
@@ -122,8 +122,8 @@ func (context *Context) Err(msg string) {
 }
 
 func (context *Context) Finish(code int, msg string, data interface{}) {
-	relt := ApiResult {code: code, msg: msg, data: data}
-	context.RenderJson(relt)
+	apiResult := ApiResult {Code: code, Msg: msg, Data: data}
+	context.RenderJson(apiResult)
 }
 
 // QueryArgs returns query arguments from RequestURI.
