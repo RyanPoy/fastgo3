@@ -15,3 +15,8 @@ func main() {
   app.Run("0.0.0.0", 3030)
 }
 ```
+
+more code examples
+* [Basic application](examples/basic_app)
+* [Api application](examples/api_app)
+* [render application](examples/render_app)
