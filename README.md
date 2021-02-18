@@ -1,7 +1,11 @@
 # fastgo3
-a simple golang webframework base on [fasthttp](https://github.com/valyala/fasthttp)
 
-simple usage:
+A simple Golang web framework base on [fasthttp](https://github.com/valyala/fasthttp). 
+
+*fastgo3* does meaning that *Fast Go Go Go*.
+
+
+## simple usage:
 ``` Golang
 import (
   "github.com/fastgo3/fastgo3"
@@ -16,7 +20,7 @@ func main() {
 }
 ```
 
-more code examples
+## more examples
 * [Basic application](examples/basic_app)
 * [Api application](examples/api_app)
 * [render application](examples/render_app)
