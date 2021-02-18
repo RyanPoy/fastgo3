@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fastgo3"
+	"github.com/fastgo3/fastgo3"
 	"flag"
 )
 
