@@ -84,6 +84,22 @@ func (app *Application) Patch(uri string, handler HandlerFunc) *Application {
 	return app.Route([]string{"PATCH"}, uri, handler)
 }
 
+func (app *Application) Connect(uri string, handler HandlerFunc) *Application {
+	return app.Route([]string{"CONNECT"}, uri, handler)
+}
+
+func (app *Application) Head(uri string, handler HandlerFunc) *Application {
+	return app.Route([]string{"HEAD"}, uri, handler)
+}
+
+func (app *Application) Options(uri string, handler HandlerFunc) *Application {
+	return app.Route([]string{"OPTIONS"}, uri, handler)
+}
+
+func (app *Application) Trace(uri string, handler HandlerFunc) *Application {
+	return app.Route([]string{"TRACE"}, uri, handler)
+}
+
 func (app *Application) Route(methods []string, uri string, handler HandlerFunc) *Application {
 	for _, method := range methods {
 		r := NewRoute(method, uri, handler)
