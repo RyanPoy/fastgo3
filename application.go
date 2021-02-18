@@ -46,11 +46,11 @@ func (app *Application) dispatch(ctx *fasthttp.RequestCtx) {
 	defer app.writeError(ctx)
 
 	uri, method := string(ctx.Path()), string(ctx.Method())
-	action, errno := app.router.Match(uri, method)
+	handler, errno := app.router.Match(uri, method)
 	if errno == 0  {
 		context := Context { fastHttpRequestCtx: ctx }
 		context.SetContentType("text/plain; charset=utf8")
-		action(&context)
+		handler(&context)
 		log.Printf("[%s] \n", uri)
 		return
 	}
@@ -65,32 +65,34 @@ func (app *Application) dispatch(ctx *fasthttp.RequestCtx) {
 	ctx.SetBodyString(fasthttp.StatusMessage(httpCode))
 }
 
-func (app *Application) Get(uri string, action HandlerFunc) *Application {
-	r := Route {Method: "GET", Uri: uri, Handler: action}
-	app.router.Add(r)
+func (app *Application) Get(uri string, handler HandlerFunc) *Application {
+	return app.Route([]string { "GET" }, uri, handler)
+}
+
+func (app *Application) Post(uri string, handler HandlerFunc) *Application {
+	return app.Route([]string { "POST" }, uri, handler)
+}
+
+func (app *Application) Put(uri string, handler HandlerFunc) *Application {
+	return app.Route([]string { "PUT" }, uri, handler)
+}
+
+func (app *Application) Delete(uri string, handler HandlerFunc) *Application {
+	return app.Route([]string { "DELETE" }, uri, handler)
+}
+
+func (app *Application) Patch(uri string, handler HandlerFunc) *Application {
+	return app.Route([]string { "PATCH" }, uri, handler)
+}
+
+func (app *Application) Route(methods []string, uri string, handler HandlerFunc) *Application {
+	for _, method := range methods {
+		r := route {Method: method, Uri: uri, Handler: handler}
+		app.router.Add(r)
+	}
 	return app
 }
 
-func (app *Application) Post(uri string, action HandlerFunc) *Application {
-	r := Route {Method: "POST", Uri: uri, Handler: action}
-	app.router.Add(r)
-	return app
-}
-
-func (app *Application) Put(uri string, action HandlerFunc) *Application {
-	r := Route {Method: "PUT", Uri: uri, Handler: action}
-	app.router.Add(r)
-	return app
-}
-
-func (app *Application) Delete(uri string, action HandlerFunc) *Application {
-	r := Route {Method: "DELETE", Uri: uri, Handler: action}
-	app.router.Add(r)
-	return app
-}
-
-func (app *Application) Patch(uri string, action HandlerFunc) *Application {
-	r := Route {Method: "PATCH", Uri: uri, Handler: action}
-	app.router.Add(r)
-	return app
+func (app *Application) GetRouter() *Router {
+	return app.router
 }

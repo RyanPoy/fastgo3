@@ -5,12 +5,11 @@ import (
 )
 
 type HandlerFunc func(ctx *Context)
-type Route struct {
+type route struct {
 	Method  string
 	Uri     string
 	Handler HandlerFunc
 }
-
 
 type MethodHandler map[string]HandlerFunc
 type Router struct {
@@ -21,15 +20,15 @@ func newRouter() Router {
 	return Router { StaticRoutes: make(map[string]MethodHandler) }
 }
 
-func (router *Router) Add(route Route) *Router {
-	methodHandler, ok := router.StaticRoutes[route.Uri]
+func (router *Router) Add(r route) *Router {
+	methodHandler, ok := router.StaticRoutes[r.Uri]
 	if !ok { // 不存在
 		methodHandler = make(MethodHandler)
-		router.StaticRoutes[route.Uri] = methodHandler
+		router.StaticRoutes[r.Uri] = methodHandler
 	}
-	method := strings.ToLower(route.Method)
+	method := strings.ToUpper(r.Method)
 	if _, ok := methodHandler[method]; !ok {
-		methodHandler[method] = route.Handler
+		methodHandler[method] = r.Handler
 	}
 	return router
 }
@@ -39,7 +38,7 @@ func (router *Router) Match(uri string, method string) (HandlerFunc, int) {
 	if !ok { // 404
 		return nil, -1
 	}
-	method = strings.ToLower(method)
+	method = strings.ToUpper(method)
 	handler, ok := methodHandler[method]
 	if !ok { // 504
 		return nil, -2

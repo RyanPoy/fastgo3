@@ -7,31 +7,73 @@ import (
 
 func fakeAction(context *Context) {}
 
-func TestStaticMatch(t *testing.T) {
+func TestStaticMatchGet(t *testing.T) {
 	assert := assert.New(t)
 
-	router := newRouter()
-	router.Add(Get("/hello", fakeAction))
-	router.Add(Post("/upload", fakeAction))
+	app := NewApplication()
+	app.Get("/hello", fakeAction)
 
-	action, _ := router.Match("/hello", "GET")
-	assert.NotNil(action)
+	router := app.GetRouter()
 
-	action, _ = router.Match("/hello", "get")
-	assert.NotNil(action)
+	handler, _ := router.Match("/hello", "GET")
+	assert.NotNil(handler)
 
-	action, _ = router.Match("/upload", "Post")
-	assert.NotNil(action)
+	handler, _ = router.Match("/hello", "get")
+	assert.NotNil(handler)
+}
 
-	action, _ = router.Match("/upload", "PoSt")
-	assert.NotNil(action)
+func TestStaticMatchPost(t *testing.T) {
+	assert := assert.New(t)
+
+	app := NewApplication()
+	app.Post("/hello", fakeAction)
+
+	router := app.GetRouter()
+
+	handler, _ := router.Match("/hello", "Post")
+	assert.NotNil(handler)
+
+	handler, _ = router.Match("/hello", "PoSt")
+	assert.NotNil(handler)
+}
+
+func TestStaticMatchGetAndPost(t *testing.T) {
+	assert := assert.New(t)
+
+	app := NewApplication()
+	app.Get("/hello", fakeAction)
+	app.Post("/hello", fakeAction)
+
+	router := app.GetRouter()
+	handler, _ := router.Match("/hello", "GET")
+	assert.NotNil(handler)
+
+	handler, _ = router.Match("/hello", "PoSt")
+	assert.NotNil(handler)
+}
+
+func TestStaticMatchOtherHttpMethods(t *testing.T) {
+	assert := assert.New(t)
+
+	app := NewApplication()
+	app.Route([]string{"PUT", "Delete"}, "/upload", fakeAction)
+
+	router := app.GetRouter()
+	handler, _ := router.Match("/upload", "put")
+	assert.NotNil(handler)
+
+	handler, _ = router.Match("/upload", "delete")
+	assert.NotNil(handler)
 }
 
 func TestStaticMiss(t *testing.T) {
 	assert := assert.New(t)
 
-	router := newRouter()
-	router.Add(Get("/hello", fakeAction))
+	app := NewApplication()
+	app.Get("/hello", fakeAction)
+	app.Post("/upload", fakeAction)
+
+	router := app.GetRouter()
 
 	_, errno := router.Match("/hi", "GET")
 	assert.Equal(-1, errno)

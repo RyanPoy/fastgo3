@@ -3,10 +3,29 @@ package fastgo3
 import (
 	"fmt"
 	"github.com/valyala/fasthttp"
+	"strings"
 )
 
 type Context struct {
 	fastHttpRequestCtx *fasthttp.RequestCtx
+	Method string
+	args []func() *fasthttp.Args
+}
+
+func NewContext(fastHttpRequestCtx *fasthttp.RequestCtx) Context {
+	c := Context {
+		fastHttpRequestCtx: fastHttpRequestCtx,
+		Method: strings.ToUpper(string(fastHttpRequestCtx.Method())),
+		args: make([]func() *fasthttp.Args, 3),
+	}
+	if c.Method == "GET" {
+		c.args[0] = c.QueryArgs
+		c.args[1] = c.PostArgs
+	} else {
+		c.args[0] = c.PostArgs
+		c.args[1] = c.QueryArgs
+	}
+	return c
 }
 
 func(context *Context) SetHeader(name string, value string) *Context {
@@ -27,10 +46,6 @@ func(context *Context) SetContentType(contentType string) *Context {
 	return context
 }
 
-func(context *Context) Method() string {
-	return string(context.fastHttpRequestCtx.Method())
-}
-
 func(context *Context) RequestURI() string {
 	return string(context.fastHttpRequestCtx.RequestURI())
 }
@@ -41,10 +56,6 @@ func(context *Context) Path() string {
 
 func(context *Context) Host() string {
 	return string(context.fastHttpRequestCtx.Host())
-}
-
-func(context *Context) QueryArgs() *fasthttp.Args {
-	return context.fastHttpRequestCtx.QueryArgs()
 }
 
 func(context *Context) UserAgent() string {
@@ -75,4 +86,79 @@ func(context *Context) Request() *fasthttp.Request {
 func (context *Context) Write(p []byte) (int, error) {
 	context.fastHttpRequestCtx.Response.AppendBody(p)
 	return len(p), nil
+}
+
+// QueryArgs returns query arguments from RequestURI.
+//
+// It doesn't return POST'ed arguments - use PostArgs() for this.
+//
+// Returned arguments are valid until returning from RequestHandler.
+//
+// See also PostArgs, FormValue and FormFile.
+func (context *Context) QueryArgs() *fasthttp.Args {
+	return context.fastHttpRequestCtx.QueryArgs()
+}
+
+// PostArgs returns POST arguments.
+//
+// It doesn't return query arguments from RequestURI - use QueryArgs for this.
+//
+// Returned arguments are valid until returning from RequestHandler.
+//
+// See also QueryArgs, FormValue and FormFile.
+func (context *Context) PostArgs() *fasthttp.Args {
+	return context.fastHttpRequestCtx.PostArgs()
+}
+
+func (context *Context) BytesParam(name string, defaultValue []byte) []byte {
+	for _, argFunc := range context.args {
+		value := argFunc().Peek(name)
+		if value != nil {
+			return value
+		}
+	}
+	return defaultValue
+}
+
+func (context *Context) StrParam(name string, defaultValue string) string {
+	value := context.BytesParam(name, nil)
+	if value != nil {
+		return string(value)
+	}
+	return defaultValue
+}
+
+// GetBool returns boolean value for the given key.
+//
+// true is returned for "1", "t", "T", "true", "TRUE", "True", "y", "yes", "Y", "YES", "Yes",
+// otherwise false is returned.
+func (context *Context) BoolParam(name string, defaultValue bool) bool {
+	for _, argFunc := range context.args {
+		args := argFunc()
+		if args.Has(name) {
+			return args.GetBool(name)
+		}
+	}
+	return defaultValue
+}
+
+
+// GetUfloat returns ufloat value for the given key.
+func (context *Context) FloatParam(key string, defaultValue float64) float64 {
+	for _, argFunc := range context.args {
+		if value, err := argFunc().GetUfloat(key); err != nil {
+			return value
+		}
+	}
+	return defaultValue
+}
+
+// GetUint returns uint value for the given key.
+func (context *Context) IntParam(key string, defaultValue int) int {
+	for _, argFunc := range context.args {
+		if value, err := argFunc().GetUint(key); err != nil {
+			return value
+		}
+	}
+	return defaultValue
 }
