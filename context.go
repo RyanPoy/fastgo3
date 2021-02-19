@@ -29,9 +29,9 @@ func NewContext(fastHttpRequestCtx *fasthttp.RequestCtx) Context {
 		middlewareIdx:      0,
 	}
 	if c.Method == "GET" {
-		c.argFuncs = []func() *fasthttp.Args {c.QueryArgs, c.PostArgs}
+		c.argFuncs = []func() *fasthttp.Args{c.QueryArgs, c.PostArgs}
 	} else {
-		c.argFuncs = []func() *fasthttp.Args {c.PostArgs, c.QueryArgs}
+		c.argFuncs = []func() *fasthttp.Args{c.PostArgs, c.QueryArgs}
 	}
 	return c
 }
