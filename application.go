@@ -11,11 +11,12 @@ type Application struct {
 	ip     string
 	port   int
 	router *Router
+	middlewares []*Middleware
 }
 
 func New() Application {
 	router := newRouter()
-	return Application{router: &router}
+	return Application{router: &router, middlewares: make([]*Middleware, 4)}
 }
 
 func (app *Application) Run(ip string, port int) {
@@ -47,21 +48,14 @@ func (app *Application) dispatch(ctx *fasthttp.RequestCtx) {
 
 	uri, method := string(ctx.Path()), string(ctx.Method())
 	handler, errno := app.router.Match(uri, method)
-	if errno == 0 {
-		context := NewContext(ctx)
-		handler(&context)
-		log.Printf("[%s] \n", uri)
-		return
-	}
-	var httpCode int
+	context := NewContext(ctx)
 	if errno == -1 {
-		httpCode = fasthttp.StatusNotFound
-	} else {
-		httpCode = fasthttp.StatusMethodNotAllowed
+		handler = WebErr404Handler
+	} else if errno == -2 {
+		handler = WebErr405Handler
 	}
-	ctx.Response.Reset()
-	ctx.SetStatusCode(httpCode)
-	ctx.SetBodyString(fasthttp.StatusMessage(httpCode))
+	handler(&context)
+	log.Printf("[%s] \n", uri)
 }
 
 func (app *Application) Get(uri string, handler HandlerFunc) *Application {
@@ -111,3 +105,8 @@ func (app *Application) Route(methods []string, uri string, handler HandlerFunc)
 func (app *Application) GetRouter() *Router {
 	return app.router
 }
+//
+//func (app *Application) Register(middleware Middleware) *Application {
+//	append(app.middlewares, middleware)
+//	return app
+//}

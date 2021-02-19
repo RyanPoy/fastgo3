@@ -1,6 +1,5 @@
 package fastgo3
 
-type HandlerFunc func(ctx *Context)
 type Route struct {
 	Method  string
 	Uri     string
