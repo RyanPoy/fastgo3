@@ -8,7 +8,7 @@ import (
 func TestStaticMatchGet(t *testing.T) {
 	assert := assert.New(t)
 
-	app := New()
+	app := Default()
 	app.Get("/hello", nil)
 
 	router := app.GetRouter()
@@ -25,7 +25,7 @@ func TestStaticMatchGet(t *testing.T) {
 func TestStaticMatchGetChinese(t *testing.T) {
 	assert := assert.New(t)
 
-	app := New()
+	app := Default()
 	app.Get("/你好", nil)
 
 	router := app.GetRouter()
@@ -36,7 +36,7 @@ func TestStaticMatchGetChinese(t *testing.T) {
 func TestStaticMatchPost(t *testing.T) {
 	assert := assert.New(t)
 
-	app := New()
+	app := Default()
 	app.Post("/hello", nil)
 
 	router := app.GetRouter()
@@ -51,7 +51,7 @@ func TestStaticMatchPost(t *testing.T) {
 func TestStaticMatchGetAndPost(t *testing.T) {
 	assert := assert.New(t)
 
-	app := New()
+	app := Default()
 	app.Get("/hello", nil)
 	app.Post("/hello", nil)
 
@@ -66,7 +66,7 @@ func TestStaticMatchGetAndPost(t *testing.T) {
 func TestStaticMatchOtherHttpMethods(t *testing.T) {
 	assert := assert.New(t)
 
-	app := New()
+	app := Default()
 	app.Route([]string{"PUT", "Delete"}, "/upload", nil)
 
 	router := app.GetRouter()
@@ -80,7 +80,7 @@ func TestStaticMatchOtherHttpMethods(t *testing.T) {
 func TestStaticMiss(t *testing.T) {
 	assert := assert.New(t)
 
-	app := New()
+	app := Default()
 	app.Get("/hello", nil)
 	app.Post("/upload", nil)
 

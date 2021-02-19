@@ -8,15 +8,17 @@ import (
 )
 
 type Application struct {
-	ip     string
-	port   int
-	router *Router
-	middlewares []*Middleware
+	ip     		string
+	port   		int
+	router 		*Router
+	middlewares	[]HandlerFunc
 }
 
-func New() Application {
+func Default() Application {
 	router := newRouter()
-	return Application{router: &router, middlewares: make([]*Middleware, 4)}
+	app := Application{router: &router, middlewares: make([]HandlerFunc, 0)}
+	app.Use(SeqId(), Logger())
+	return app
 }
 
 func (app *Application) Run(ip string, port int) {
@@ -46,16 +48,18 @@ func (app *Application) writeError(ctx *fasthttp.RequestCtx) {
 func (app *Application) dispatch(ctx *fasthttp.RequestCtx) {
 	defer app.writeError(ctx)
 
-	uri, method := string(ctx.Path()), string(ctx.Method())
-	handler, errno := app.router.Match(uri, method)
+	path, method := string(ctx.Path()), string(ctx.Method())
+	handler, errno := app.router.Match(path, method)
 	context := NewContext(ctx)
 	if errno == -1 {
 		handler = Web404Handler
 	} else if errno == -2 {
 		handler = Web405Handler
 	}
-	handler(&context)
-	log.Printf("[%s] \n", uri)
+	context.middlewares = &app.middlewares
+	context.handler = &handler
+	context.Next()
+	//handler(&context)
 }
 
 func (app *Application) Get(uri string, handler HandlerFunc) *Application {
@@ -105,8 +109,8 @@ func (app *Application) Route(methods []string, uri string, handler HandlerFunc)
 func (app *Application) GetRouter() *Router {
 	return app.router
 }
-//
-//func (app *Application) Register(middleware Middleware) *Application {
-//	append(app.middlewares, middleware)
-//	return app
-//}
+
+func (app *Application) Use(middlewares ...HandlerFunc) *Application {
+	app.middlewares = append(app.middlewares, middlewares...)
+	return app
+}

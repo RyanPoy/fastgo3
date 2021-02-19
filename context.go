@@ -16,6 +16,10 @@ type Context struct {
 	fastHttpRequestCtx *fasthttp.RequestCtx
 	Method             string
 	argFuncs           []func() *fasthttp.Args
+	middlewares        *[]HandlerFunc
+	middlewareIdx      int
+	handler            *HandlerFunc
+	SeqId              string
 }
 
 func NewContext(fastHttpRequestCtx *fasthttp.RequestCtx) Context {
@@ -23,6 +27,7 @@ func NewContext(fastHttpRequestCtx *fasthttp.RequestCtx) Context {
 		fastHttpRequestCtx: fastHttpRequestCtx,
 		Method:             Upper(string(fastHttpRequestCtx.Method())),
 		argFuncs:           make([]func() *fasthttp.Args, 3),
+		middlewareIdx:      0,
 	}
 	if c.Method == "GET" {
 		c.argFuncs[0] = c.QueryArgs
@@ -32,6 +37,17 @@ func NewContext(fastHttpRequestCtx *fasthttp.RequestCtx) Context {
 		c.argFuncs[1] = c.QueryArgs
 	}
 	return c
+}
+
+func (context *Context) Next() {
+	l := len(*context.middlewares)
+	if context.middlewareIdx <  l { // middleware
+		middleware := (*context.middlewares)[context.middlewareIdx]
+		context.middlewareIdx += 1
+		middleware(context)
+	} else if context.middlewareIdx == l { // handler
+		(*context.handler)(context)
+	}
 }
 
 func (context *Context) SetHeader(name string, value string) *Context {
