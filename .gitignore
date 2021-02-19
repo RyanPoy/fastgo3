@@ -2,3 +2,6 @@
 fastgo3.iml
 .DS_Store
 go.sum
+examples/api_app/api_app
+examples/basic_app/basic_app
+examples/render_app/render_app
