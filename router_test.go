@@ -5,86 +5,84 @@ import (
 	"testing"
 )
 
-func fakeAction(context *Context) {}
-
 func TestStaticMatchGet(t *testing.T) {
 	assert := assert.New(t)
 
 	app := New()
-	app.Get("/hello", fakeAction)
+	app.Get("/hello", nil)
 
 	router := app.GetRouter()
-	handler, _ := router.Match("/hello", "GET")
-	assert.NotNil(handler)
+	_, errno := router.Match("/hello", "GET")
+	assert.Equal(0, errno)
 
-	handler, _ = router.Match("/hello", "get")
-	assert.NotNil(handler)
+	_, errno = router.Match("/hello", "get")
+	assert.Equal(0, errno)
 
-	handler, _ = router.Match("/hello/", "GET")
-	assert.NotNil(handler)
+	_, errno = router.Match("/hello/", "GET")
+	assert.Equal(0, errno)
 }
 
 func TestStaticMatchGetChinese(t *testing.T) {
 	assert := assert.New(t)
 
 	app := New()
-	app.Get("/你好", fakeAction)
+	app.Get("/你好", nil)
 
 	router := app.GetRouter()
-	handler, _ := router.Match("/你好", "GET")
-	assert.NotNil(handler)
+	_, errno := router.Match("/你好", "GET")
+	assert.Equal(0, errno)
 }
 
 func TestStaticMatchPost(t *testing.T) {
 	assert := assert.New(t)
 
 	app := New()
-	app.Post("/hello", fakeAction)
+	app.Post("/hello", nil)
 
 	router := app.GetRouter()
 
-	handler, _ := router.Match("/hello", "Post")
-	assert.NotNil(handler)
+	_, errno := router.Match("/hello", "Post")
+	assert.Equal(0, errno)
 
-	handler, _ = router.Match("/hello", "PoSt")
-	assert.NotNil(handler)
+	_, errno = router.Match("/hello", "PoSt")
+	assert.Equal(0, errno)
 }
 
 func TestStaticMatchGetAndPost(t *testing.T) {
 	assert := assert.New(t)
 
 	app := New()
-	app.Get("/hello", fakeAction)
-	app.Post("/hello", fakeAction)
+	app.Get("/hello", nil)
+	app.Post("/hello", nil)
 
 	router := app.GetRouter()
-	handler, _ := router.Match("/hello", "GET")
-	assert.NotNil(handler)
+	_, errno := router.Match("/hello", "GET")
+	assert.Equal(0, errno)
 
-	handler, _ = router.Match("/hello", "PoSt")
-	assert.NotNil(handler)
+	_, errno = router.Match("/hello", "PoSt")
+	assert.Equal(0, errno)
 }
 
 func TestStaticMatchOtherHttpMethods(t *testing.T) {
 	assert := assert.New(t)
 
 	app := New()
-	app.Route([]string{"PUT", "Delete"}, "/upload", fakeAction)
+	app.Route([]string{"PUT", "Delete"}, "/upload", nil)
 
 	router := app.GetRouter()
-	handler, _ := router.Match("/upload", "put")
-	assert.NotNil(handler)
+	_, errno := router.Match("/upload", "put")
+	assert.Equal(0, errno)
 
-	handler, _ = router.Match("/upload", "delete")
-	assert.NotNil(handler)
+	_, errno = router.Match("/upload", "delete")
+	assert.Equal(0, errno)
 }
 
 func TestStaticMiss(t *testing.T) {
 	assert := assert.New(t)
 
 	app := New()
-	app.Get("/hello", fakeAction)
-	app.Post("/upload", fakeAction)
+	app.Get("/hello", nil)
+	app.Post("/upload", nil)
 
 	router := app.GetRouter()
 
