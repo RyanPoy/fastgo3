@@ -6,16 +6,16 @@ import (
 	"github.com/valyala/fasthttp"
 )
 
-type Context struct {
-	fastHttpRequestCtx *fasthttp.RequestCtx
-	Method             string
-	argFuncs           []func() *fasthttp.Args
-}
-
 type ApiResult struct {
 	Code int         `json:"code"`
 	Msg  string      `json:"msg"`
 	Data interface{} `json:"data"`
+}
+
+type Context struct {
+	fastHttpRequestCtx *fasthttp.RequestCtx
+	Method             string
+	argFuncs           []func() *fasthttp.Args
 }
 
 func NewContext(fastHttpRequestCtx *fasthttp.RequestCtx) Context {

@@ -50,9 +50,9 @@ func (app *Application) dispatch(ctx *fasthttp.RequestCtx) {
 	handler, errno := app.router.Match(uri, method)
 	context := NewContext(ctx)
 	if errno == -1 {
-		handler = WebErr404Handler
+		handler = Web404Handler
 	} else if errno == -2 {
-		handler = WebErr405Handler
+		handler = Web405Handler
 	}
 	handler(&context)
 	log.Printf("[%s] \n", uri)
