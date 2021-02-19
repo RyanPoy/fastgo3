@@ -13,7 +13,7 @@ var (
 func main() {
 	flag.Parse()
 
-	app := fastgo3.Default()
+	app := fastgo3.New()
 	app.Get("/ok", OkHandler)
 	app.Get("/err", ErrHandler)
 	app.Get("/finish", FinishHandler)

@@ -14,10 +14,10 @@ type Application struct {
 	middlewares []HandlerFunc
 }
 
-func Default() Application {
+func New() Application {
 	router := newRouter()
 	app := Application{router: &router, middlewares: make([]HandlerFunc, 0)}
-	//app.Use(SeqId(), Logger())
+	//app.Use(Logger())
 	return app
 }
 
