@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/fastgo3/fastgo3"
 	"flag"
+	"github.com/fastgo3/fastgo3"
 )
 
 var (
