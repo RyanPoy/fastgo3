@@ -21,4 +21,3 @@ func WebErrHandler(context *Context, httpCode int, message string) {
 	context.fastHttpRequestCtx.SetStatusCode(httpCode)
 	context.fastHttpRequestCtx.SetBodyString(message)
 }
-

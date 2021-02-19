@@ -8,10 +8,10 @@ import (
 )
 
 type Application struct {
-	ip     		string
-	port   		int
-	router 		*Router
-	middlewares	[]HandlerFunc
+	ip          string
+	port        int
+	router      *Router
+	middlewares []HandlerFunc
 }
 
 func Default() Application {

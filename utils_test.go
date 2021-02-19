@@ -21,5 +21,5 @@ func TestUpperMethod(t *testing.T) {
 
 func TestUpprMethodShouldGiveErrorIfMethodUnsupported(t *testing.T) {
 	assert := assert.New(t)
-	assert.Panics(func() {Upper("UnsupportedMethod")})
+	assert.Panics(func() { Upper("UnsupportedMethod") })
 }

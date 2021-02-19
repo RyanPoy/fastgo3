@@ -13,7 +13,6 @@ func Purify(uri string) string {
 	return uri
 }
 
-
 var SUPPORT_METHODS = []string{"GET", "HEAD", "POST", "DELETE", "PATCH", "PUT", "OPTIONS"}
 var SUPPORT_METHOD_SET = func() map[string]int {
 	m := make(map[string]int)

@@ -41,7 +41,7 @@ func NewContext(fastHttpRequestCtx *fasthttp.RequestCtx) Context {
 
 func (context *Context) Next() {
 	l := len(*context.middlewares)
-	if context.middlewareIdx <  l { // middleware
+	if context.middlewareIdx < l { // middleware
 		middleware := (*context.middlewares)[context.middlewareIdx]
 		context.middlewareIdx += 1
 		middleware(context)
