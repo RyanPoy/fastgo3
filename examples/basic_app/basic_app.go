@@ -20,6 +20,7 @@ func main() {
 	app.Get("/do-get", getHandler)
 	app.Post("/do-post", postHandler)
 	app.Get("/panic", panicHandler)
+	app.Get("/redirect", redirctHandler)
 	app.Run(*ip, *port)
 }
 
@@ -58,4 +59,9 @@ func postHandler(ctx *fastgo3.Context) {
 func panicHandler(ctx *fastgo3.Context) {
 	lst := make([]int, 0)
 	lst[0] = 10
+}
+
+func redirctHandler(ctx *fastgo3.Context) {
+	to := ctx.StrParam("to", "http://www.baidu.com/")
+	ctx.Redirect(to)
 }

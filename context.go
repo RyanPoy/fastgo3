@@ -26,15 +26,12 @@ func NewContext(fastHttpRequestCtx *fasthttp.RequestCtx) Context {
 	c := Context{
 		fastHttpRequestCtx: fastHttpRequestCtx,
 		Method:             Upper(string(fastHttpRequestCtx.Method())),
-		argFuncs:           make([]func() *fasthttp.Args, 3),
 		middlewareIdx:      0,
 	}
 	if c.Method == "GET" {
-		c.argFuncs[0] = c.QueryArgs
-		c.argFuncs[1] = c.PostArgs
+		c.argFuncs = []func() *fasthttp.Args {c.QueryArgs, c.PostArgs}
 	} else {
-		c.argFuncs[0] = c.PostArgs
-		c.argFuncs[1] = c.QueryArgs
+		c.argFuncs = []func() *fasthttp.Args {c.PostArgs, c.QueryArgs}
 	}
 	return c
 }
@@ -140,6 +137,10 @@ func (context *Context) Err(msg string) {
 func (context *Context) Finish(code int, msg string, data interface{}) {
 	apiResult := ApiResult{Code: code, Msg: msg, Data: data}
 	context.RenderJson(apiResult)
+}
+
+func (context *Context) Redirect(url string) {
+	context.fastHttpRequestCtx.Redirect(url, fasthttp.StatusFound)
 }
 
 // QueryArgs returns query arguments from RequestURI.
