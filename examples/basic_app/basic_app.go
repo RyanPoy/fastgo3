@@ -14,7 +14,8 @@ var (
 func main() {
 	flag.Parse()
 
-	app := fastgo3.New()
+	app := fastgo3.Default()
+
 	app.Get("/basic", basicAction)
 	app.Get("/do-get", getHandler)
 	app.Post("/do-post", postHandler)
