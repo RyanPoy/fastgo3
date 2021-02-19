@@ -17,7 +17,7 @@ type Application struct {
 func Default() Application {
 	router := newRouter()
 	app := Application{router: &router, middlewares: make([]HandlerFunc, 0)}
-	app.Use(SeqId(), Logger())
+	//app.Use(SeqId(), Logger())
 	return app
 }
 
