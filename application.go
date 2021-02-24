@@ -51,9 +51,9 @@ func (app *Application) dispatch(ctx *fasthttp.RequestCtx) {
 	path, method := string(ctx.Path()), string(ctx.Method())
 	handler, errno := app.router.Match(path, method)
 	context := NewContext(ctx)
-	if errno == -1 {
+	if errno == 404 {
 		handler = Web404Handler
-	} else if errno == -2 {
+	} else if errno == 504 {
 		handler = Web405Handler
 	}
 	context.middlewares = &app.middlewares
@@ -100,8 +100,7 @@ func (app *Application) Trace(uri string, handler HandlerFunc) *Application {
 
 func (app *Application) Route(methods []string, uri string, handler HandlerFunc) *Application {
 	for _, method := range methods {
-		r := NewRoute(method, uri, handler)
-		app.router.Add(r)
+		app.router.Add(method, uri, handler)
 	}
 	return app
 }
