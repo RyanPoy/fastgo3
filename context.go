@@ -20,6 +20,7 @@ type Context struct {
 	middlewareIdx      int
 	handler            *HandlerFunc
 	SeqId              string
+	UriArgs			   map[string]string
 }
 
 func NewContext(fastHttpRequestCtx *fasthttp.RequestCtx) Context {
@@ -27,6 +28,7 @@ func NewContext(fastHttpRequestCtx *fasthttp.RequestCtx) Context {
 		fastHttpRequestCtx: fastHttpRequestCtx,
 		Method:             Upper(string(fastHttpRequestCtx.Method())),
 		middlewareIdx:      0,
+		UriArgs: 			make(map[string]string),
 	}
 	if c.Method == "GET" {
 		c.argFuncs = []func() *fasthttp.Args{c.QueryArgs, c.PostArgs}

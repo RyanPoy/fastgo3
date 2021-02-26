@@ -16,6 +16,7 @@ type StaticRoute struct {
 
 type DynRouteNode struct {
 	path           string         // origin path
+	name           string		  // name of path
 	rePath         *regexp.Regexp // regex path
 	Handler        HandlerFunc    // HandlerFunc or nil
 	isEnd          bool
@@ -27,16 +28,17 @@ type DynRouteNode struct {
 func NewDynRouteNode(path string, isEnd bool, handler HandlerFunc) DynRouteNode {
 	node := DynRouteNode{
 		path:           path,
+		name: 			path,
 		rePath:         nil,
 		isEnd:          isEnd,
 		Handler:        handler,
 		staticChildren: make(map[string]*DynRouteNode),
-		dynChildren:    make([]*DynRouteNode, 1),
+		dynChildren:    make([]*DynRouteNode, 0),
 	}
 	l := len(node.path)
 	if l >= 2 && node.path[0] == '<' && node.path[l-1] == '>' {
-		path = path[1 : l-1]
-		vs := strings.SplitN(path, ":", 2)
+		vs := strings.SplitN(path[1 : l-1], ":", 2)
+		node.name = vs[0]
 		tp := "s"
 		if len(vs) > 1 {
 			tp = vs[1]
@@ -54,6 +56,12 @@ func NewDynRouteNode(path string, isEnd bool, handler HandlerFunc) DynRouteNode 
 	}
 	return node
 }
+
+//func (node *DynRouteNode) ToString() string {
+//
+//}
+//
+//func (node *DynRouteNode) iter
 
 func (node *DynRouteNode) findForMatch(path string) *DynRouteNode {
 	if child, ok := node.staticChildren[path]; ok {
@@ -159,29 +167,31 @@ func (router *Router) addAStaticRoute(r StaticRoute) *Router {
 	return router
 }
 
-func (router *Router) Match(uri string, method string) (HandlerFunc, int) {
+func (router *Router) Match(uri string, method string) (HandlerFunc, map[string]string, int) {
 	uri = Purify(uri)
 	method = Upper(method)
 	handler, ok := router.matchAStaticRoute(uri, method)
 	if ok == 504 || ok == 0 { // 504 or 200
-		return handler, ok
+		return handler, nil, ok
 	}
 
 	node := &router.DynRoot
+	args := make(map[string]string)
 	for _, path := range strings.Split(uri, "/") {
 		child := node.findForMatch(path)
 		if child == nil {
-			return nil, 404
+			return nil, nil, 404
 		}
 		node = child
+		args[node.name] = path
 	}
 	if !node.isEnd {
-		return nil, 404
+		return nil, nil, 404
 	}
 	if node.method != method {
-		return nil, 504
+		return nil, nil, 504
 	}
-	return node.Handler, 0
+	return node.Handler, args, 0
 }
 
 func (router *Router) matchAStaticRoute(uri string, method string) (HandlerFunc, int) {

@@ -13,13 +13,14 @@ func TestStaticMatchGet(t *testing.T) {
 	app.Get("/hello", nil)
 
 	router := app.GetRouter()
-	_, errno := router.Match("/hello", "GET")
+	_, args, errno := router.Match("/hello", "GET")
+	assert.Equal(0, errno)
+	assert.Nil(args)
+
+	_, _, errno = router.Match("/hello", "get")
 	assert.Equal(0, errno)
 
-	_, errno = router.Match("/hello", "get")
-	assert.Equal(0, errno)
-
-	_, errno = router.Match("/hello/", "GET")
+	_, _, errno = router.Match("/hello/", "GET")
 	assert.Equal(0, errno)
 }
 
@@ -30,7 +31,7 @@ func TestStaticMatchGetChinese(t *testing.T) {
 	app.Get("/你好", nil)
 
 	router := app.GetRouter()
-	_, errno := router.Match("/你好", "GET")
+	_, _, errno := router.Match("/你好", "GET")
 	assert.Equal(0, errno)
 }
 
@@ -42,10 +43,10 @@ func TestStaticMatchPost(t *testing.T) {
 
 	router := app.GetRouter()
 
-	_, errno := router.Match("/hello", "Post")
+	_, _, errno := router.Match("/hello", "Post")
 	assert.Equal(0, errno)
 
-	_, errno = router.Match("/hello", "PoSt")
+	_, _, errno = router.Match("/hello", "PoSt")
 	assert.Equal(0, errno)
 }
 
@@ -57,10 +58,10 @@ func TestStaticMatchGetAndPost(t *testing.T) {
 	app.Post("/hello", nil)
 
 	router := app.GetRouter()
-	_, errno := router.Match("/hello", "GET")
+	_, _, errno := router.Match("/hello", "GET")
 	assert.Equal(0, errno)
 
-	_, errno = router.Match("/hello", "PoSt")
+	_, _, errno = router.Match("/hello", "PoSt")
 	assert.Equal(0, errno)
 }
 
@@ -71,10 +72,10 @@ func TestStaticMatchOtherHttpMethods(t *testing.T) {
 	app.Route([]string{"PUT", "Delete"}, "/upload", nil)
 
 	router := app.GetRouter()
-	_, errno := router.Match("/upload", "put")
+	_, _, errno := router.Match("/upload", "put")
 	assert.Equal(0, errno)
 
-	_, errno = router.Match("/upload", "delete")
+	_, _, errno = router.Match("/upload", "delete")
 	assert.Equal(0, errno)
 }
 
@@ -87,10 +88,10 @@ func TestStaticMiss(t *testing.T) {
 
 	router := app.GetRouter()
 
-	_, errno := router.Match("/hi", "GET")
+	_, _, errno := router.Match("/hi", "GET")
 	assert.Equal(404, errno)
 
-	_, errno = router.Match("/hello", "Post")
+	_, _, errno = router.Match("/hello", "Post")
 	assert.Equal(504, errno)
 }
 
@@ -100,8 +101,11 @@ func TestDynMathString(t *testing.T) {
 	app.Get("/hello/<name>", nil)
 
 	router := app.GetRouter()
-	_, errno := router.Match("/hello/abc", "GET")
+	_, args, errno := router.Match("/hello/abc", "GET")
 	assert.Equal(0, errno)
+
+	v, _ := args["name"]
+	assert.Equal("abc", v)
 }
 
 func TestDynMathString2(t *testing.T) {
@@ -110,8 +114,11 @@ func TestDynMathString2(t *testing.T) {
 	app.Get("/hello/<name:s>", nil)
 
 	router := app.GetRouter()
-	_, errno := router.Match("/hello/abc", "GET")
+	_, args, errno := router.Match("/hello/abc", "GET")
 	assert.Equal(0, errno)
+
+	v, _ := args["name"]
+	assert.Equal("abc", v)
 }
 
 func TestDynMathInt(t *testing.T) {
@@ -120,8 +127,11 @@ func TestDynMathInt(t *testing.T) {
 	app.Get("/users/<id:i>/hello", nil)
 
 	router := app.GetRouter()
-	_, errno := router.Match("/users/10/hello", "GET")
+	_, args, errno := router.Match("/users/10/hello", "GET")
 	assert.Equal(0, errno)
+
+	v, _ := args["id"]
+	assert.Equal("10", v)
 }
 
 func TestDynMissingInt(t *testing.T) {
@@ -130,13 +140,13 @@ func TestDynMissingInt(t *testing.T) {
 	app.Get("/users/<id:i>/hello", nil)
 
 	router := app.GetRouter()
-	_, errno := router.Match("/users/10", "GET")
+	_, _, errno := router.Match("/users/10", "GET")
 	assert.Equal(404, errno)
 
-	_, errno = router.Match("/users/ryan10/hello", "GET")
+	_, _, errno = router.Match("/users/ryan10/hello", "GET")
 	assert.Equal(404, errno)
 
-	_, errno = router.Match("/users/10.1/hello", "GET")
+	_, _, errno = router.Match("/users/10.1/hello", "GET")
 	assert.Equal(404, errno)
 }
 
@@ -146,14 +156,19 @@ func TestDynMathFloat(t *testing.T) {
 	app.Get("/users/<score:f>/sort", nil)
 
 	router := app.GetRouter()
-	_, errno := router.Match("/users/10.1/sort", "GET")
+	_, args, errno := router.Match("/users/10.1/sort", "GET")
 	assert.Equal(0, errno)
+	v, _ := args["score"]
+	assert.Equal("10.1", v)
 
-	_, errno = router.Match("/users/10.1.1/sort", "GET")
+	_, args, errno = router.Match("/users/10.1.1/sort", "GET")
 	assert.Equal(404, errno)
 
-	_, errno = router.Match("/users/10/sort", "GET")
+	_, args, errno = router.Match("/users/10/sort", "GET")
 	assert.Equal(0, errno)
+
+	v, _ = args["score"]
+	assert.Equal("10", v)
 }
 
 func TestComplexMatch(t *testing.T) {
@@ -165,16 +180,16 @@ func TestComplexMatch(t *testing.T) {
 	app.Get("/users/123/hello", nil)
 
 	router := app.GetRouter()
-	_, errno := router.Match("/users/1/score/math/1.2/end", "GET")
+	_, _, errno := router.Match("/users/1/score/math/1.2/end", "GET")
 	assert.Equal(0, errno)
 
-	_, errno = router.Match("/users/1/score", "GET")
+	_, _, errno = router.Match("/users/1/score", "GET")
 	assert.Equal(0, errno)
 
-	_, errno = router.Match("/users/Jim/hello", "GET")
+	_, _, errno = router.Match("/users/Jim/hello", "GET")
 	assert.Equal(0, errno)
 
-	_, errno = router.Match("/users/123/hello", "GET")
+	_, _, errno = router.Match("/users/123/hello", "GET")
 	assert.Equal(0, errno)
 }
 
@@ -184,12 +199,12 @@ func TestComplexMissing(t *testing.T) {
 	app.Get("/users/<id:i>/score/<name>/<value:f>/end", nil)
 	router := app.GetRouter()
 
-	_, errno := router.Match("/users/1/score/math/1.2/end", "POST")
+	_, _, errno := router.Match("/users/1/score/math/1.2/end", "POST")
 	assert.Equal(504, errno)
 
-	_, errno = router.Match("/users/1/score/math/1.2.0/end", "GET")
+	_, _, errno = router.Match("/users/1/score/math/1.2.0/end", "GET")
 	assert.Equal(404, errno)
 
-	_, errno = router.Match("/users/1.2/score/math/1.2/end", "GET")
+	_, _, errno = router.Match("/users/1.2/score/math/1.2/end", "GET")
 	assert.Equal(404, errno)
 }

@@ -49,8 +49,9 @@ func (app *Application) dispatch(ctx *fasthttp.RequestCtx) {
 	defer app.writeError(ctx)
 
 	path, method := string(ctx.Path()), string(ctx.Method())
-	handler, errno := app.router.Match(path, method)
+	handler, args, errno := app.router.Match(path, method)
 	context := NewContext(ctx)
+	context.UriArgs = args
 	if errno == 404 {
 		handler = Web404Handler
 	} else if errno == 504 {
