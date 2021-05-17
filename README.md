@@ -8,7 +8,7 @@ A simple Golang web framework base on [fasthttp](https://github.com/valyala/fast
 ## simple usage:
 ``` Golang
 import (
-  "github.com/fastgo3/fastgo3"
+  "github.com/RyanPoy/fastgo3"
 )
 
 func main() {
