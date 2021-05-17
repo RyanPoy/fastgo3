@@ -3,7 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/fastgo3/fastgo3"
+	"github.com/RyanPoy/fastgo3"
 )
 
 var (

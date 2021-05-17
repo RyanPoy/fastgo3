@@ -1,4 +1,4 @@
-module github.com/fastgo3/fastgo3
+module github.com/RyanPoy/fastgo3
 
 go 1.15
 
