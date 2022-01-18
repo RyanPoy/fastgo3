@@ -1,6 +1,6 @@
 module github.com/RyanPoy/fastgo3
 
-go 1.15
+go 1.17
 
 require github.com/valyala/fasthttp v1.24.0
 
